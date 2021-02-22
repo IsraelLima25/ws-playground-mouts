@@ -1,0 +1,30 @@
+package com.dev.lima.entities;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+import com.dev.lima.enums.Sexo;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Entity
+@Table(name = "tbl_person")
+@Data
+@Builder
+public class Person implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
+	private String cpf;
+	private String nome;
+	private Sexo sexo;
+	private String email;
+	private LocalDate dataNascimento;
+	private String naturalidade;
+	private String nacionalidade;
+
+}

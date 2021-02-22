@@ -1,0 +1,5 @@
+package com.dev.lima.entities;
+
+public class Person {
+
+}
