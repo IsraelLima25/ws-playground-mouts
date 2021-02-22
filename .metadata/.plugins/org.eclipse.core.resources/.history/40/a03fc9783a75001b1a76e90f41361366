@@ -1,0 +1,50 @@
+package com.dev.lima.dtos;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import com.dev.lima.enums.Sexo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
+public class PersonDTO implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	@SuppressWarnings("unused")
+	private String cpf;
+	
+	@SuppressWarnings("unused")
+	private String nome;
+	
+	@Enumerated(EnumType.STRING)
+	private Sexo sexo;
+	
+	@SuppressWarnings("unused")
+	private String email;
+	
+	@SuppressWarnings("unused")
+	private LocalDate dataNascimento;
+	
+	@SuppressWarnings("unused")
+	private String naturalidade;
+	
+	@SuppressWarnings("unused")
+	private String nacionalidade;
+
+}

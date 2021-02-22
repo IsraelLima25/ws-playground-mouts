@@ -1,0 +1,24 @@
+package com.dev.lima;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.dev.lima.repositories.PersonRepository;
+import com.dev.lima.services.PersonService;
+
+@SpringBootApplication
+public class ApiRestCrudApplication {
+
+	@Autowired
+	private PersonRepository repository;
+
+	@Autowired
+	private PersonService service;
+
+	public static void main(String[] args) {
+		SpringApplication.run(ApiRestCrudApplication.class, args);
+	}
+
+
+}

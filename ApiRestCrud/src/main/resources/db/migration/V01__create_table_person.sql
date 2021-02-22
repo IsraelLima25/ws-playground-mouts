@@ -3,7 +3,7 @@ CREATE TABLE person(
     nome VARCHAR(100) NOT NULL,
     sexo VARCHAR(30) NOT NULL,
     email VARCHAR(50) NULL,
-    dataNascimento DATE NOT NULL,
+    data_nascimento DATE NOT NULL,
     naturalidade VARCHAR(50) NOT NULL,
     nacionalidade VARCHAR(50) NOT NULL
 )
