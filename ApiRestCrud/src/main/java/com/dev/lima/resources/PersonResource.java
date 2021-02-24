@@ -21,6 +21,8 @@ import com.dev.lima.dtos.PersonDTO;
 import com.dev.lima.dtos.PersonDTOUpdate;
 import com.dev.lima.services.PersonService;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/persons")
 public class PersonResource {
@@ -28,6 +30,7 @@ public class PersonResource {
 	@Autowired
 	private PersonService personService;
 	
+	@ApiOperation(value = "Salvar pessoa")
 	@PostMapping
 	public ResponseEntity<PersonDTO> save(@Valid @RequestBody PersonDTO personDTO){
 
@@ -39,6 +42,7 @@ public class PersonResource {
 		return ResponseEntity.created(uri).body(personSave);
 	}
 	
+	@ApiOperation(value = "Buscar pessoa por CPF")
 	@GetMapping(value = "/{cpf}")
 	public ResponseEntity<PersonDTO> findByCPF(@PathVariable String cpf){
 		
@@ -46,18 +50,21 @@ public class PersonResource {
 		return ResponseEntity.ok(findPerson);
 	}
 	
+	@ApiOperation(value = "Listar todas as pessoas cadastradas")
 	@GetMapping
 	public ResponseEntity<List<PersonDTO>> listAll(){
 		List<PersonDTO> persons = personService.listAll();
 		return ResponseEntity.ok().body(persons);
 	}
 	
+	@ApiOperation(value = "Atualizar pessoa")
 	@PutMapping("/{cpf}")
 	public ResponseEntity<PersonDTO> update(@Valid @RequestBody PersonDTOUpdate personDTOUpdate, @PathVariable String cpf){
 		PersonDTO personDTO = personService.update(personDTOUpdate, cpf);
 		return ResponseEntity.ok().body(personDTO);
 	}
 	
+	@ApiOperation(value = "Apagar pessoa")
 	@DeleteMapping("/{cpf}")
 	public ResponseEntity<Void> delete(@PathVariable String cpf){
 		PersonDTO finPersonDTO = personService.findPersonByCPF(cpf);

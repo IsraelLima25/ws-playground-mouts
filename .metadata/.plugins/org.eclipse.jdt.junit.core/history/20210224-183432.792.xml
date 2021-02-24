@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="ResourcePersonTest.shouldReturnBadRequestNamePersonNullOrBlank" project="ApiRestCrud" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="com.dev.lima.resources.ResourcePersonTest" time="0.301" displayname="ResourcePersonTest" uniqueid="[engine:junit-jupiter]/[class:com.dev.lima.resources.ResourcePersonTest]">
-    <testcase name="shouldReturnBadRequestNamePersonNullOrBlank" classname="com.dev.lima.resources.ResourcePersonTest" time="0.301" displayname="shouldReturnBadRequestNamePersonNullOrBlank()" uniqueid="[engine:junit-jupiter]/[class:com.dev.lima.resources.ResourcePersonTest]/[method:shouldReturnBadRequestNamePersonNullOrBlank()]"/>
-  </testsuite>
-</testrun>

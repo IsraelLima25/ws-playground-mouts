@@ -16,17 +16,15 @@ import com.dev.lima.enums.Sexo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PersonDTO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	public PersonDTO() {
-		
-	}
 	
 	@NotBlank
 	@CPF

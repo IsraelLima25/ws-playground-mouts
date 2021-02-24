@@ -21,7 +21,6 @@
     <fullyQualifiedTypeName name="java.io.Serializable"/>
     <fullyQualifiedTypeName name="groovy.transform.builder.Builder"/>
     <fullyQualifiedTypeName name="lombok.AllArgsConstructor"/>
-    <fullyQualifiedTypeName name="lombok.NoArgsConstructor"/>
     <fullyQualifiedTypeName name="com.dev.lima.dtos.PersonDTOUpdate"/>
     <fullyQualifiedTypeName name="lombok.Builder"/>
     <fullyQualifiedTypeName name="java.time.LocalDate"/>
@@ -50,14 +49,15 @@
     <fullyQualifiedTypeName name="org.springframework.security.config.http.SessionCreationPolicy"/>
     <fullyQualifiedTypeName name="com.sun.org.apache.xpath.internal.operations.And"/>
     <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
-    <fullyQualifiedTypeName name="org.springframework.security.test.context.support.WithMockUser"/>
-    <fullyQualifiedTypeName name="org.junit.jupiter.api.Test"/>
     <fullyQualifiedTypeName name="com.dev.lima.dtos.PersonDTO"/>
     <fullyQualifiedTypeName name="com.fasterxml.jackson.databind.ObjectMapper"/>
     <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
-    <fullyQualifiedTypeName name="org.springframework.http.MediaType"/>
     <fullyQualifiedTypeName name="org.springframework.test.web.servlet.result.MockMvcResultMatchers"/>
     <fullyQualifiedTypeName name="org.springframework.test.web.servlet.request.MockMvcRequestBuilders"/>
     <fullyQualifiedTypeName name="org.springframework.test.web.servlet.ResultMatcher"/>
     <fullyQualifiedTypeName name="org.hamcrest.Matchers"/>
+    <fullyQualifiedTypeName name="org.junit.jupiter.api.Test"/>
+    <fullyQualifiedTypeName name="org.springframework.security.test.context.support.WithMockUser"/>
+    <fullyQualifiedTypeName name="org.springframework.http.MediaType"/>
+    <fullyQualifiedTypeName name="lombok.NoArgsConstructor"/>
 </qualifiedTypeNameHistroy>
