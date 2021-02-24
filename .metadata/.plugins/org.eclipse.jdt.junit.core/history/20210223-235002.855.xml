@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?><testrun name="PersonServiceTest.updatePerson" project="ApiRestCrud" tests="1" started="1" failures="0" errors="0" ignored="0">
-  <testsuite name="com.dev.lima.services.PersonServiceTest" time="359.451" displayname="PersonServiceTest" uniqueid="[engine:junit-jupiter]/[class:com.dev.lima.services.PersonServiceTest]">
-    <testcase name="updatePerson" classname="com.dev.lima.services.PersonServiceTest" time="359.451" displayname="updatePerson()" uniqueid="[engine:junit-jupiter]/[class:com.dev.lima.services.PersonServiceTest]/[method:updatePerson()]"/>
-  </testsuite>
-</testrun>

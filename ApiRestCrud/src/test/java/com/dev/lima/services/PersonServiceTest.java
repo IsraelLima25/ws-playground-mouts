@@ -18,7 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.BootstrapWith;
 
 import com.dev.lima.dtos.PersonDTO;
 import com.dev.lima.dtos.PersonDTOUpdate;
@@ -65,6 +67,7 @@ public class PersonServiceTest {
 	public void findPersonByCPFWhenExistis() {
 
 		when(this.repo.findById("04922265912")).thenReturn(Optional.of(person));
+		
 		PersonDTO personFind = service.findPersonByCPF(personDTO.getCpf());
 		assertTrue(personFind.getCpf().equals("04922265912"));
 	}
@@ -79,49 +82,49 @@ public class PersonServiceTest {
 		String exceptionNamen = exception.getClass().getName();
 		assertTrue(exceptionNamen.equals(ResourceNotFounException.class.getName()));
 	}
-	
+
 	@Test
 	public void savePerson() {
 		when(this.repo.save(person)).thenReturn(person);
 		PersonDTO savePerson = service.savePerson(personDTO);
-		
+
 		verify(repo, times(1)).save(person);
 		assertTrue(savePerson.getCpf().equals(person.getCpf()));
 		assertTrue(savePerson.getDateCreated().equals(LocalDate.now()));
 	}
-	
+
 	@Test
 	public void listAllPerson() {
 		when(this.repo.findAll()).thenReturn(persons);
 		List<PersonDTO> personsDTO = service.listAll();
-		
+
 		int sizeList = personsDTO.size();
-		String cpf = personsDTO.get(0).getCpf();	
-		
+		String cpf = personsDTO.get(0).getCpf();
+
 		assertEquals(1, sizeList);
-		assertEquals(person.getCpf(),cpf);
+		assertEquals(person.getCpf(), cpf);
 	}
-	
+
 	@Test
 	public void updatePerson() {
-		
+
 		Person personNew = new Person();
 		personNew.setCpf("04922265912");
 		personNew.setEmail("israel@uol.com");
 		personNew.setDateCreated(LocalDate.now());
 		personNew.setDateUpdate(LocalDate.now());
-		
+
 		when(this.repo.findById(personDTO.getCpf())).thenReturn(Optional.of(person));
 		when(this.repo.save(personNew)).thenReturn(personNew);
-		
+
 		PersonDTOUpdate personMapDTO = modelMapper.map(personNew, PersonDTOUpdate.class);
-		
+
 		PersonDTO personDTOUpdate = service.update(personMapDTO, personNew.getCpf());
-		
+
 		assertTrue(!personDTOUpdate.getEmail().equals(person.getEmail()));
 		assertTrue(personDTOUpdate.getDateUpdate().equals(LocalDate.now()));
 	}
-	
+
 	@Test
 	public void deletePerson() {
 		doNothing().when(repo).delete(person);

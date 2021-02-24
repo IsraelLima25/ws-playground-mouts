@@ -1,6 +1,11 @@
 package com.dev.lima.resources;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,34 +17,37 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.dev.lima.dtos.PersonDTO;
 import com.dev.lima.dtos.PersonDTOUpdate;
 import com.dev.lima.enums.Sexo;
-import com.dev.lima.exceptions.ResourceNotFounException;
 import com.dev.lima.services.PersonService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.restassured.http.ContentType;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
-
-@WebMvcTest
+@WebMvcTest(PersonResource.class)
 public class ResourcePersonTest {
 	
 	private PersonDTO personDTO;
 	
+    @Autowired
+    private MockMvc mockMvc;
+	
 	private PersonDTOUpdate personDTOUpdate;
 	
-	@Autowired
-	private PersonResource personResource;
-
 	@MockBean
 	private PersonService personService;
 
+	@Autowired
+	private ObjectMapper mapperJackson;
+	
 	@BeforeEach
-	public void setup() {
+	public void setup() throws JsonProcessingException {
 		
-		RestAssuredMockMvc.standaloneSetup(this.personResource);
 		
 		this.personDTO = PersonDTO.builder()
 				.cpf("18626735006")
@@ -59,169 +67,115 @@ public class ResourcePersonTest {
 		.name("Israel Santos Lima Filho")
 		.sexo(Sexo.MASCULINO)
 		.build();
+		
 	}
 
 	@Test
-	public void shouldReturnSucessWhenListPerson() {
+	public void shouldReturnIsokWhenUserListPerson() throws Exception {
+		
+		Mockito.when(personService.listAll()).thenReturn(List.of(personDTO));
+		
+		mockMvc.perform(get("/persons")
+				.content(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().isOk());
+	}
 
-		Mockito.when(this.personService.listAll()).thenReturn(List.of(this.personDTO));
+	
+	@Test
+	public void shouldReturnUnauthorizationWhenUserNotAuthenticatedDeletePerson() throws Exception {
+		
+		Mockito.when(personService.delete(personDTO.getCpf())).thenReturn(true);
+		Mockito.when(personService.findPersonByCPF(personDTO.getCpf())).thenReturn(personDTO);
+		
+		mockMvc.perform(delete("/person/18626735006")
+				.content(MediaType.APPLICATION_JSON_VALUE))		
+			.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	@WithMockUser(username = "israel")
+	public void shouldReturnSuccessWhenUserAuthenticatedDeletePersonCPFExists() throws Exception {
+		
+		Mockito.when(personService.delete(personDTO.getCpf())).thenReturn(true);
+		Mockito.when(personService.findPersonByCPF(personDTO.getCpf())).thenReturn(personDTO);
+		
+		mockMvc.perform(delete("/person/18626735006")
+				.content(MediaType.APPLICATION_JSON_VALUE));
+		
+		assertTrue(personService.delete(personDTO.getCpf()) != false);
+	}
+	
+	@Test
+	@WithMockUser(username = "israel")
+	public void shouldSuccessWhenUserAuthenticatedDeletePersonCPFNotExists() throws Exception {
+		
+		Mockito.when(personService.delete(personDTO.getCpf())).thenReturn(true);
+		Mockito.when(personService.findPersonByCPF(personDTO.getCpf())).thenReturn(personDTO);
+		
+		mockMvc.perform(delete("/person/18626735006")
+				.content(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(status().is4xxClientError());
+		
+		assertTrue(personService.delete(personDTO.getCpf()) != false);
+	}
+	
+	@Test
+	public void shouldReturnUnauthorizationWhenUsuarioNotAuthenticatedCreatedPerson() throws Exception {
+		
+		Mockito.when(personService.savePerson(personDTO)).thenReturn(personDTO);
+		
+		mockMvc.perform(post("/persons", personDTO))
+				.andExpect(status().isUnauthorized());
+	}
+	
+	@Test
+	@WithMockUser(username = "israel")
+	public void shouldReturnCreatedWhenUsuarioAuthenticatedCreatedPerson() throws Exception {
+		
+		String jsonContentPersonDTO = mapperJackson.writeValueAsString(personDTO);
+		
+		Mockito.when(this.personService.savePerson(this.personDTO)).thenReturn(this.personDTO);
+		
+		mockMvc.perform(
+				post("/persons")
+				.content(jsonContentPersonDTO)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isCreated())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.cpf", Matchers.equalTo(personDTO.getCpf())))
+			.andExpect(MockMvcResultMatchers.header()
+					.string("Location", Matchers.containsString("/persons/"+personDTO.getCpf())));
+	}
+	
+	@Test
+	@WithMockUser(username = "israel")
+	public void shouldReturnUnprocessablePersonInvalid() throws Exception {
+		
+		personDTO.setName("");
+		personDTO.setEmail("israelslf22gmail.com");
+		personDTO.setDateBirth(null);
+		personDTO.setCpf("");
 
-		RestAssuredMockMvc.given()
-		.accept(ContentType.JSON)
-		.when().get("/persons")
-		.then()
-		.statusCode(HttpStatus.OK.value())
-		.body("$.size()", Matchers.equalTo(1));
+		String jsonContentPersonDTO = mapperJackson.writeValueAsString(personDTO);
+		
+		mockMvc.perform(post("/persons")
+				.content(jsonContentPersonDTO)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isUnprocessableEntity());
 	}
 	
 	@Test
-	public void shouldReturnNoContentWhenDeletePersonCPFExists() {
-		
-		Mockito.when(this.personService.delete(this.personDTO.getCpf())).thenReturn(true);
-		Mockito.when(this.personService.findPersonByCPF(this.personDTO.getCpf())).thenReturn(this.personDTO);
-		
-		RestAssuredMockMvc.given()
-		.when()
-		.delete("/persons/{cpf}", this.personDTO.getCpf())
-		.then()
-		.statusCode(HttpStatus.NO_CONTENT.value());
-		
-		assertTrue(this.personService.delete(this.personDTO.getCpf()) != false);
-	}
-	
-	@Test
-	public void shouldReturnNoContentWhenDeletePersonCPFNotExists() {
-		
-		Mockito.when(this.personService.delete(this.personDTO.getCpf())).thenReturn(false);
-		Mockito.when(this.personService.findPersonByCPF("12")).thenThrow(ResourceNotFounException.class);
-		
-		try {
-			
-			RestAssuredMockMvc.given()
-			.when()
-			.delete("/persons/{cpf}", "12")
-			.then()
-			.statusCode(HttpStatus.NOT_FOUND.value());
-		}catch (Exception e) {
-			assertTrue(true);
-		}
-	}
-	
-	@Test
-	public void shouldReturnCreatedAndHeaderUriWhenPersonSave(){
-		
-		String jsonPersonDTO = 
-				"{\"cpf\": \"18626735006\", \"dateBirth\": \"2020-03-01\", "
-				+ "\"email\": \"israelslf22@gmail.com\", \"nationality\": \"brasileiro\", "
-				+ "\"naturalness\":\"Salvador\", \"name\":\"Israel Santos Lima Filho\", \"sexo\":\"MASCULINO\"}";
-		
-		Mockito.when(this.personService.savePerson(this.personDTO)).thenReturn(this.personDTO);
-		
-		 RestAssuredMockMvc.given()
-		.contentType("application/json")
-		.body(jsonPersonDTO)
-		.when()
-		.post("/persons")
-		.then()
-		.statusCode(HttpStatus.CREATED.value())
-		.header("Location", Matchers.containsString("/persons/18626735006"));
-	}
-	
-	@Test
-	public void shouldReturnBadRequestNamePersonNullOrBlank() {
-		
-		Mockito.when(this.personService.savePerson(this.personDTO)).thenReturn(this.personDTO);
-		
-		String jsonPersonDTO = 
-				"{\"cpf\": \"18626735006\", \"dateBirth\": \"2020-03-01\", "
-				+ "\"email\": \"israelslf22@gmail.com\", \"nationality\": \"brasileiro\", "
-				+ "\"naturalness\":\"Salvador\", \"name\": \"\", \"sexo\":\"MASCULINO\"}";
-		
-		RestAssuredMockMvc.given()
-		.contentType("Application/json")
-		.body(jsonPersonDTO)
-		.when()
-		.post("/persons")
-		.then()
-		.statusCode(HttpStatus.BAD_REQUEST.value());
-	}
-	
-	@Test
-	public void shouldReturnBadRequestEmailPersonInvalid() {
-		
-		Mockito.when(this.personService.savePerson(this.personDTO)).thenReturn(this.personDTO);
-		
-		String jsonPersonDTO = 
-				"{\"cpf\": \"18626735006\", \"dateBirth\": \"2020-03-01\", "
-				+ "\"email\": \"israelslf22gmail.com\", \"nationality\": \"brasileiro\", "
-				+ "\"naturalness\":\"Salvador\", \"name\": \"Israel Santos Lima Filho\", \"sexo\":\"MASCULINO\"}";
-		
-		RestAssuredMockMvc.given()
-		.contentType("Application/json")
-		.body(jsonPersonDTO)
-		.when()
-		.post("/persons")
-		.then()
-		.statusCode(HttpStatus.BAD_REQUEST.value());
-	}
-	
-	@Test
-	public void shouldReturnBadRequestDataNascimentoPersonBlanckOrNull() {
-		
-		Mockito.when(this.personService.savePerson(this.personDTO)).thenReturn(this.personDTO);
-		
-		String jsonPersonDTO = 
-				"{\"cpf\": \"18626735006\", \"dateBirth\": \"2020-03-0\", "
-				+ "\"email\": \"israelslf22gmail.com\", \"nationality\": \"brasileiro\", "
-				+ "\"naturalness\":\"Salvador\", \"name\": \"Israel Santos Lima Filho\", \"sexo\":\"MASCULINO\"}";
-		
-		RestAssuredMockMvc.given()
-		.contentType("Application/json")
-		.body(jsonPersonDTO)
-		.when()
-		.post("/persons")
-		.then()
-		.statusCode(HttpStatus.BAD_REQUEST.value());
-	}
-	
-	@Test
-	public void shouldReturnBadRequestCPFNullOrInvalid() {
-		
-		Mockito.when(this.personService.savePerson(this.personDTO)).thenReturn(this.personDTO);
-		
-		String jsonPersonDTO = 
-				"{\"cpf\": \"186\", \"dateBirth\": \"2020-03-0\", "
-				+ "\"email\": \"israelslf22gmail.com\", \"nationality\": \"brasileiro\", "
-				+ "\"naturalness\":\"Salvador\", \"name\": \"Israel Santos Lima Filho\", \"sexo\":\"MASCULINO\"}";
-		
-		RestAssuredMockMvc.given()
-		.contentType("Application/json")
-		.body(jsonPersonDTO)
-		.when()
-		.post("/persons")
-		.then()
-		.statusCode(HttpStatus.BAD_REQUEST.value());
-	}
-	
-	@Test
-	public void shouldReturnSuccessWhenUpdatePerson() {
+	@WithMockUser(username = "israel")
+	public void shouldReturnSuccessWhenUserAuthenticatedUpdatePerson() throws Exception {
 		
 		Mockito.when(this.personService.update(this.personDTOUpdate, "18626735006")).thenReturn(this.personDTO);
+		String jsonContentPersonDTO = mapperJackson.writeValueAsString(personDTO);
 		
-		String jsonPersonDTO = 
-				"{\"dateBirth\": \"2020-03-01\","
-				+ "\"email\": \"israelslf22@gmail.com\", \"nationality\": \"brasileiro\", "
-				+ "\"naturalness\":\"Salvador\", \"name\": \"Israel Santos Lima Filho\", \"sexo\":\"MASCULINO\"}";
-		
-		RestAssuredMockMvc.given()
-		.contentType("Application/json")
-		.body(jsonPersonDTO)
-		.when()
-		.put("/persons/{cpf}", "18626735006")
-		.then()
-		.statusCode(HttpStatus.OK.value());
+		mockMvc.perform(put("/persons/18626735006")
+				.content(jsonContentPersonDTO)
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk());
 	}
-	
-	
-	
 }

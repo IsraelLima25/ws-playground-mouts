@@ -8,14 +8,14 @@
 		<item key="wrap" value="true"/>
 		<item key="incremental" value="false"/>
 		<list key="findhistory">
+			<item value="jay"/>
+			<item value="jaa"/>
 			<item value="049180"/>
 			<item value="049"/>
 			<item value="findPerso"/>
 			<item value="mock-mvc"/>
 			<item value="spring-mock-mvc"/>
 			<item value="test"/>
-			<item value="spring-mock"/>
-			<item value="verify"/>
 		</list>
 		<list key="replacehistory">
 		</list>
