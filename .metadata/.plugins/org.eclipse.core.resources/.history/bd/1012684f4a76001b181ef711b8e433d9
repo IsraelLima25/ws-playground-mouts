@@ -1,0 +1,116 @@
+package com.dev.lima.services;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+import com.dev.lima.dtos.PersonDTO;
+import com.dev.lima.dtos.PersonDTOUpdate;
+import com.dev.lima.entities.Person;
+import com.dev.lima.exceptions.ResourceNotFounException;
+import com.dev.lima.repositories.PersonRepository;
+
+@SpringBootTest
+public class PersonServiceTest {
+
+	private  PersonDTO personDTO = new PersonDTO();
+	private  Person person = new Person();
+	private  List<Person> persons = new ArrayList<>();
+	
+
+	@MockBean
+	private PersonRepository repo;
+
+	@Autowired
+	private PersonService service;
+
+	@Autowired	
+	public ModelMapper modelMapper;
+
+	@BeforeEach
+	public void setup() {
+		
+		personDTO = PersonDTO.builder().cpf("04922265912")
+				.email("israelslf22@gmail.com")
+				.dateCreated(LocalDate.now())
+				.dateUpdate(LocalDate.now())
+				.build();
+		
+		person = Person.builder().cpf("04922265912")
+				.email("israelslf22@gmail.com")
+				.dateCreated(LocalDate.now())
+				.dateUpdate(LocalDate.now())
+				.build();
+		
+		persons.add(person);
+	}
+
+	@Test
+	public void findPersonByCPFWhenExistis() {
+
+		when(this.repo.findById("04922265912")).thenReturn(Optional.of(person));
+		PersonDTO personFind = service.findPersonByCPF(personDTO.getCpf());
+		assertTrue(personFind.getCpf().equals("04922265912"));
+	}
+
+	@Test
+	public void findPersonByCPFWhenNotExistis() {
+
+		RuntimeException exception = assertThrows(ResourceNotFounException.class, () -> {
+			service.findPersonByCPF(personDTO.getCpf());
+		});
+
+		String exceptionNamen = exception.getClass().getName();
+		assertTrue(exceptionNamen.equals(ResourceNotFounException.class.getName()));
+	}
+	
+	@Test
+	public void savePerson() {
+		when(this.repo.save(person)).thenReturn(person);
+		PersonDTO savePerson = service.savePerson(personDTO);
+		
+		verify(repo, times(1)).save(person);
+		assertTrue(savePerson.getCpf().equals(person.getCpf()));
+		assertTrue(savePerson.getDateCreated().equals(LocalDate.now()));
+	}
+	
+	@Test
+	public void listAllPerson() {
+		when(this.repo.findAll()).thenReturn(persons);
+		List<PersonDTO> personsDTO = service.listAll();
+		
+		int sizeList = personsDTO.size();
+		String cpf = personsDTO.get(0).getCpf();	
+		
+		assertEquals(1, sizeList);
+		assertEquals(person.getCpf(),cpf);
+	}
+	
+	@Test
+	public void updatePerson() {
+		
+		
+	}
+	
+	@Test
+	public void deletePerson() {
+		doNothing().when(repo).delete(person);
+	}
+	
+}

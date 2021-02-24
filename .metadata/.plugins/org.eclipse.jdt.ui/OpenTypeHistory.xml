@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <typeInfoHistroy>
-    <typeInfo handle="=ApiRestCrud/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.dev.lima.entities{Person.java[Person" modifiers="1" timestamp="1614018563215"/>
+    <typeInfo handle="=ApiRestCrud/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.dev.lima.services{PersonService.java[PersonService" modifiers="1" timestamp="1614122897774"/>
+    <typeInfo handle="=ApiRestCrud/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.dev.lima.entities{Person.java[Person" modifiers="1" timestamp="1614117310196"/>
+    <typeInfo handle="=ApiRestCrud/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.dev.lima.resources{PersonResource.java[PersonResource" modifiers="1" timestamp="1614121568037"/>
+    <typeInfo handle="=ApiRestCrud/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.dev.lima.dtos{PersonDTO.java[PersonDTO" modifiers="1" timestamp="1614120650758"/>
 </typeInfoHistroy>

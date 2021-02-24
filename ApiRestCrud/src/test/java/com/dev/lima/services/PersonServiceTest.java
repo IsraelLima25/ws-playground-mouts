@@ -1,13 +1,19 @@
 package com.dev.lima.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import com.dev.lima.dtos.PersonDTO;
+import com.dev.lima.dtos.PersonDTOUpdate;
 import com.dev.lima.entities.Person;
 import com.dev.lima.exceptions.ResourceNotFounException;
 import com.dev.lima.repositories.PersonRepository;
@@ -22,9 +29,10 @@ import com.dev.lima.repositories.PersonRepository;
 @SpringBootTest
 public class PersonServiceTest {
 
-	private static PersonDTO personDTO = new PersonDTO();
-	private static Person person = new Person();
-	private static List<Person> persons = new ArrayList<>();
+	private  PersonDTO personDTO = new PersonDTO();
+	private  Person person = new Person();
+	private  List<Person> persons = new ArrayList<>();
+	
 
 	@MockBean
 	private PersonRepository repo;
@@ -32,17 +40,23 @@ public class PersonServiceTest {
 	@Autowired
 	private PersonService service;
 
-	@Autowired
+	@Autowired	
 	public ModelMapper modelMapper;
 
-	@BeforeAll
-	public static void init() {
+	@BeforeEach
+	public void setup() {
+		
 		personDTO = PersonDTO.builder().cpf("04922265912")
 				.email("israelslf22@gmail.com")
+				.dateCreated(LocalDate.now())
+				.dateUpdate(LocalDate.now())
 				.build();
-		person.setCpf("04922265912");
 		
-		person.setEmail("israelslf22@gmail.com");
+		person = Person.builder().cpf("04922265912")
+				.email("israelslf22@gmail.com")
+				.dateCreated(LocalDate.now())
+				.dateUpdate(LocalDate.now())
+				.build();
 		
 		persons.add(person);
 	}
@@ -73,6 +87,7 @@ public class PersonServiceTest {
 		
 		verify(repo, times(1)).save(person);
 		assertTrue(savePerson.getCpf().equals(person.getCpf()));
+		assertTrue(savePerson.getDateCreated().equals(LocalDate.now()));
 	}
 	
 	@Test
@@ -93,15 +108,18 @@ public class PersonServiceTest {
 		Person personNew = new Person();
 		personNew.setCpf("04922265912");
 		personNew.setEmail("israel@uol.com");
+		personNew.setDateCreated(LocalDate.now());
+		personNew.setDateUpdate(LocalDate.now());
 		
 		when(this.repo.findById(personDTO.getCpf())).thenReturn(Optional.of(person));
-		when(this.repo.save(person)).thenReturn(personNew);
+		when(this.repo.save(personNew)).thenReturn(personNew);
 		
-		PersonDTO personMapDTO = modelMapper.map(personNew, PersonDTO.class);
+		PersonDTOUpdate personMapDTO = modelMapper.map(personNew, PersonDTOUpdate.class);
 		
 		PersonDTO personDTOUpdate = service.update(personMapDTO, personNew.getCpf());
 		
-		assertTrue(!personDTOUpdate.getEmail().equals(personDTO.getEmail()));
+		assertTrue(!personDTOUpdate.getEmail().equals(person.getEmail()));
+		assertTrue(personDTOUpdate.getDateUpdate().equals(LocalDate.now()));
 	}
 	
 	@Test

@@ -1,5 +1,6 @@
 package com.dev.lima.services;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.dev.lima.dtos.PersonDTO;
+import com.dev.lima.dtos.PersonDTOUpdate;
 import com.dev.lima.entities.Person;
 import com.dev.lima.exceptions.ResourceNotFounException;
 import com.dev.lima.repositories.PersonRepository;
@@ -39,9 +41,11 @@ public class PersonService {
 		return personDTO;
 	}
 	
-	@Transactional
+	//@Transactional
 	public PersonDTO savePerson(PersonDTO personDTO) {
+		
 		Person personMap = modelMapper.map(personDTO, Person.class);
+		personMap.setDateCreated(LocalDate.now());
 		Person savePerson = repositoyPerson.save(personMap);
 
 		PersonDTO personDTOMapper = modelMapper.map(savePerson, PersonDTO.class);
@@ -59,19 +63,29 @@ public class PersonService {
 	}
 	
 	@Transactional
-	public PersonDTO update(PersonDTO personDTO, String cpf) {
-		PersonDTO personSave = findPersonByCPF(cpf);
-		BeanUtils.copyProperties(personDTO, personSave, "cpf");
-
-		Person personMap = modelMapper.map(personSave, Person.class);
-		repositoyPerson.save(personMap);
+	public PersonDTO update(PersonDTOUpdate personDTOUpdate, String cpf) {
 		
-		return personSave;
+		PersonDTO personSave = findPersonByCPF(cpf);
+		BeanUtils.copyProperties(personDTOUpdate, personSave, "dateCreated");
+		
+		Person person = modelMapper.map(personSave, Person.class);
+		person.setDateUpdate(LocalDate.now());
+		
+		Person savePerson = repositoyPerson.save(person);
+
+		PersonDTO personDTO = modelMapper.map(savePerson, PersonDTO.class);
+		
+		return personDTO;
 	}
 	
-	public void delete(String cpf) {
-		PersonDTO findPerson = findPersonByCPF(cpf);
-		Person personMap = modelMapper.map(findPerson, Person.class);
-		repositoyPerson.delete(personMap);
+	public boolean delete(String cpf) {
+		try {
+			PersonDTO findPerson = findPersonByCPF(cpf);
+			Person personMap = modelMapper.map(findPerson, Person.class);
+			repositoyPerson.delete(personMap);
+			return true;
+		}catch (ResourceNotFounException e) {
+			return false;
+		}
 	}
 }

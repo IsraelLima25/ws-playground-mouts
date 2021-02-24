@@ -3,7 +3,7 @@ package com.dev.lima.resources;
 import java.net.URI;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.dev.lima.dtos.PersonDTO;
+import com.dev.lima.dtos.PersonDTOUpdate;
 import com.dev.lima.services.PersonService;
 
 @RestController
@@ -28,10 +29,9 @@ public class PersonResource {
 	private PersonService personService;
 	
 	@PostMapping
-	public ResponseEntity<PersonDTO> save(@RequestBody PersonDTO personDTO,
-			HttpServletResponse response){
+	public ResponseEntity<PersonDTO> save(@Valid @RequestBody PersonDTO personDTO){
 
-		PersonDTO personSave = personService.savePerson(personDTO);
+		PersonDTO personSave = this.personService.savePerson(personDTO);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(personSave.getCpf()).toUri();
@@ -53,14 +53,15 @@ public class PersonResource {
 	}
 	
 	@PutMapping("/{cpf}")
-	public ResponseEntity<PersonDTO> atualizar(@RequestBody PersonDTO personDTO, @PathVariable String cpf){
-		PersonDTO personDTOUpdate = personService.update(personDTO, cpf);
-		return ResponseEntity.ok().body(personDTOUpdate);
+	public ResponseEntity<PersonDTO> update(@Valid @RequestBody PersonDTOUpdate personDTOUpdate, @PathVariable String cpf){
+		PersonDTO personDTO = personService.update(personDTOUpdate, cpf);
+		return ResponseEntity.ok().body(personDTO);
 	}
 	
 	@DeleteMapping("/{cpf}")
-	public ResponseEntity<Void> apagar(@PathVariable String cpf){
-		personService.delete(cpf);
+	public ResponseEntity<Void> delete(@PathVariable String cpf){
+		PersonDTO finPersonDTO = personService.findPersonByCPF(cpf);
+		personService.delete(finPersonDTO.getCpf());
 		return ResponseEntity.noContent().build();
 	}
 }

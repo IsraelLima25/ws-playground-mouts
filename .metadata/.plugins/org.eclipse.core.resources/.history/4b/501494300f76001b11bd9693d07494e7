@@ -1,0 +1,15 @@
+package com.dev.lima.resources.exceptions;
+
+import groovy.transform.builder.Builder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@Builder
+public class ValidationError extends StandarError {
+
+	private static final long serialVersionUID = 1L;
+	
+	
+
+}

@@ -1,0 +1,22 @@
+package com.dev.lima.resources.exceptions;
+
+import java.io.Serializable;
+
+import groovy.transform.builder.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Builder
+@NoArgsConstructor
+public class FieldMessage implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	private String fieldName;
+	private String message;
+	
+	
+	
+
+}

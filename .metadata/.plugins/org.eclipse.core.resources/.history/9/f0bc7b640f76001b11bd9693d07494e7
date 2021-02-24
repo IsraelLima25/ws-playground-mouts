@@ -1,0 +1,5 @@
+package com.dev.lima.resources.exceptions;
+
+public class FieldMessage {
+
+}

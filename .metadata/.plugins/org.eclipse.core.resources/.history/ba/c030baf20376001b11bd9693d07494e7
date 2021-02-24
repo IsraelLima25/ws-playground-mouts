@@ -1,0 +1,41 @@
+package com.dev.lima;
+
+import java.time.LocalDate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import com.dev.lima.dtos.PersonDTO;
+import com.dev.lima.enums.Sexo;
+import com.dev.lima.repositories.PersonRepository;
+
+@SpringBootApplication
+public class ApiRestCrudApplication implements CommandLineRunner {
+	
+	@Autowired
+	private PersonRepository repository;
+
+	public static void main(String[] args) {
+		SpringApplication.run(ApiRestCrudApplication.class, args);
+	}
+
+	@Override
+	public void run(String... args) throws Exception {
+		Person personBuild = Person.builder()
+		.cpf("04922265912")
+		.dataNascimento(LocalDate.now())
+		.email("israelslf22@gmail.com")
+		.nacionalidade("brasileiro")
+		.naturalidade("Salvador")
+		.nome("Israel Santos Lima Filho")
+		.sexo(Sexo.MASCULINO)
+		.build();
+		
+		
+		repository.save(personBuild);
+		
+	}
+
+}

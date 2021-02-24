@@ -1,0 +1,25 @@
+package com.dev.lima.services.exceptions;
+
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import com.dev.lima.exceptions.ResourceNotFounException;
+
+@ControllerAdvice
+public class ResourceExceptionHandler {
+	
+	@ExceptionHandler(ResourceNotFounException.class)
+	public ResponseEntity<StandarError> resourceNotFound(ResourceNotFoundException e,
+			HttpServletRequest request){
+		
+		 String message = messageSource.getMessage("recurso-nao-encontrado", null,
+					LocaleContextHolder.getLocale());					
+				
+		StandarError err = new StandarError(System.currentTimeMillis(),
+				HttpStatus.NOT_FOUND.value(), e.getMessage(), 
+				message, request.getRequestURI());
+		
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(err);
+	}
+
+}

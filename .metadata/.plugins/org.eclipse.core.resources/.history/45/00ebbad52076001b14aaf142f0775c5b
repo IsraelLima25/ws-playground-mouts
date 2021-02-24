@@ -1,0 +1,42 @@
+package com.dev.lima.entities;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import com.dev.lima.enums.Sexo;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+
+@Entity
+@Data
+@AllArgsConstructor
+@Builder
+public class Person implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
+	public Person() {
+		
+	}
+
+	@Id
+	private String cpf;
+
+	private String name;
+
+	private Sexo sexo;
+
+	private String email;
+
+	private LocalDate dateBirth;
+
+	private String naturalidade;
+
+	private String nacionalidade;
+
+}

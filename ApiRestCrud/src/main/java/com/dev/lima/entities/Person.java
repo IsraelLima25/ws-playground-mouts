@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 import com.dev.lima.enums.Sexo;
@@ -13,30 +11,36 @@ import com.dev.lima.enums.Sexo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class Person implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	public Person() {
+		
+	}
 
 	@Id
 	private String cpf;
 
-	private String nome;
+	private String name;
 
 	private Sexo sexo;
 
 	private String email;
 
-	private LocalDate dataNascimento;
+	private LocalDate dateBirth;
 
-	private String naturalidade;
+	private String naturalness;
 
-	private String nacionalidade;
+	private String nationality;
+	
+	private LocalDate dateCreated;
+	
+	private LocalDate dateUpdate;
 
 }
